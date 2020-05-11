@@ -2,7 +2,7 @@
 #include <stdio.h> 
 #include <string.h> 
 #include <stdlib.h> 
-  
+// Compile with: gcc bof.c -o bof -fno-stack-protector
 int main(int argc, char *argv[]) 
 { 
     // char buf2[16] = "overwriteme";
