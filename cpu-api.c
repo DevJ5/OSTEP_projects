@@ -4,18 +4,25 @@
 #include <fcntl.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <sys/wait.h>
 #include <string.h>
 
 int question1();
 int question2();
+int question3();
+int question4();
+int question6();
+int question7();
 
 int main(void)
 {
     //question1();
-    question2();
-
-
-    return 0;
+    //question2();
+    //question3();
+    //question4();
+    //question6();
+    //question7();
+    
 }
 
 int question1()
@@ -76,4 +83,93 @@ int question2()
         close(fd_parent);
     }
     return 0;
+}
+
+int question3()
+{
+    int fd = open("foo.txt", O_RDWR | O_APPEND);
+    int rc = fork();
+
+    if (rc < 0) 
+    {
+        fprintf(stderr, "Something went wrong with fork.");
+        return 1;
+    }
+    else if (rc == 0)
+    {
+        write(fd, "hello\n", strlen("hello\n"));
+    }
+    else
+    {
+        sleep(1);
+        char* greeting = "goodbye\n";
+        write(fd, greeting, strlen(greeting));
+    }
+
+    return 0;
+}
+
+int question4()
+{
+    int rc = fork();
+
+    if (rc < 0)
+    {
+        fprintf(stderr, "Something went wrong with fork.");
+        return 1;
+    }
+    else if (rc == 0)
+    {
+        // char* args[2];
+        // args[0] = "ls";
+        // args[1] = '\0';
+        //execvp("ls", args);
+        execlp("ls", "ls", (void*)0);
+        printf("The child process won't get here...");
+    }
+    else
+    {
+        printf("The parent process: %d\n", getpid());
+    }
+    return 0;
+}
+
+int question6()
+{
+    int rc = fork();
+    if (rc < 0)
+    {
+        fprintf(stderr, "Something went wrong with fork.");
+        exit(1);
+    }
+    else if (rc == 0)
+    {
+        printf("Rc: %d\n", rc);
+        printf("Child process: %d\n", getpid());
+    }
+    else
+    {
+        printf("Rc: %d\n", rc);
+        waitpid(rc, NULL, WUNTRACED | WCONTINUED);
+        printf("Parent process: %d\n", getpid());
+    }
+}
+
+int question7()
+{
+    int rc = fork();
+    if (rc < 0)
+    {
+        fprintf(stderr, "Something went wrong with fork.");
+        return 1;
+    }
+    else if (rc == 0)
+    {
+        close(STDOUT_FILENO);
+        printf("Child_PID: %i\n", getpid());
+    }
+    else
+    {
+        printf("Parent_PID: %i\n",getpid());
+    }
 }
