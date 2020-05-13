@@ -22,7 +22,7 @@ int main(void)
     //question4();
     //question6();
     //question7();
-    
+    //question8();
 }
 
 int question1()
@@ -171,5 +171,65 @@ int question7()
     else
     {
         printf("Parent_PID: %i\n",getpid());
+    }
+}
+
+int question8()
+{
+    // Inititalize a pipe filedescriptor with a reading part [0] and a writing part [1]
+    int pipefd[2];
+    // Initialize an array for 2 process return codes
+    pid_t rc[2];
+    // Create pipe
+    if (pipe(pipefd))
+    {
+        fprintf(stderr, "Pipe failed.\n");
+        return EXIT_FAILURE;
+    }
+    // Create first child
+    rc[0] = fork();
+
+    if (rc[0] < 0)
+    {
+        fprintf(stderr, "Something went wrong with fork.");
+        exit(1);
+    }
+    else if (rc[0] == 0)
+    {
+        // Close the reading end
+        close(pipefd[0]);
+        char* greeting = "hello from first child\n";
+        // Write to the writing end
+        write(pipefd[1], greeting, strlen(greeting));
+        // Close the writing end
+        close(pipefd[1]);
+    }
+    else
+    {
+        // In the parent create another child process
+        rc[1] = fork();
+        char buffer;
+        if (rc[1] < 0)
+        {
+            fprintf(stderr, "Something went wrong with fork.");
+            exit(1);
+        }
+        else if (rc[1] == 0)
+        {
+            close(pipefd[1]);
+            // Read 1 character into the memory address of the buffer
+            while (read(pipefd[0], &buffer, 1) > 0)
+            {
+                // Print to stdout
+                printf("%c", buffer);
+            }
+            close(pipefd[0]);
+
+        }
+        else
+        {
+            printf("Parent continues here.\n");
+        }
+        return 0;
     }
 }
