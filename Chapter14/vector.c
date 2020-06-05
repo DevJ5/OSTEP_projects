@@ -11,9 +11,10 @@ int main (void)
 {
     Array arr;
     arr.array = malloc(8 *  sizeof(int));
-    arr.array[0] = 100;
+    
     arr.used = 0;
     arr.size = 8;
+    
     for (int i = 0; i < 100; i++)
     {
         if (arr.used == arr.size)
